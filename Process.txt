@@ -1,0 +1,6 @@
+Step 1: Crawl data
+Step 2: Write file json from data
+Step 3: Read file json from data
+Step 4: Read Input from user
+Step 5: Filter data from user find in file json
+Step 6: Print outputs to console
