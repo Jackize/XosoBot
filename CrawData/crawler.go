@@ -11,17 +11,11 @@ import (
 )
 
 // Crawl all result in a single page
-func GetAllXoso(currentUrl string, boxXoso BoxXoso.BoxXoso) (BoxXoso.BoxXoso, error) {
+func GetAllXoso(boxXoso BoxXoso.BoxXoso, updateBox BoxXoso.BoxXoso) (BoxXoso.BoxXoso, error) {
 	eg := errgroup.Group{}
 	eg.Go(func() error {
-		//Now just only update data beacause already get and write file json before
-		if Find.CheckUpdateData() {
-			updateBox := BoxXoso.BoxXoso{}
-			updateBox, err := UpdateData(currentUrl)
-			Find.CheckError(err)
-			boxXoso.Xoso = append(updateBox.Xoso, boxXoso.Xoso...)
-			fmt.Println("Getting data")
-		}
+		boxXoso.Xoso = append(updateBox.Xoso, boxXoso.Xoso...)
+		fmt.Println("Getting data")
 		return nil
 	})
 	err := eg.Wait()
