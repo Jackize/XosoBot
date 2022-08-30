@@ -1,7 +1,7 @@
 package readfile
 
 import (
-	Crawler "XosoBot/CrawData"
+	Crawler "XosoBot/CrawlData"
 	Handle "XosoBot/Handle"
 	BoxXoso "XosoBot/Structure"
 	WriteFile "XosoBot/WriteFile"
