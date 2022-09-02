@@ -1,10 +1,10 @@
 package crawler
 
 import (
-	Find "XosoBot/Handle"
 	BoxXoso "XosoBot/Structure"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/sync/errgroup"
@@ -19,7 +19,9 @@ func GetAllXoso(boxXoso BoxXoso.BoxXoso, updateBox BoxXoso.BoxXoso) (BoxXoso.Box
 		return nil
 	})
 	err := eg.Wait()
-	Find.CheckError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return boxXoso, nil
 }
 
@@ -58,6 +60,62 @@ func GetXosoByUrl(currentUrl string, boxXoso BoxXoso.BoxXoso) (BoxXoso.BoxXoso, 
 		boxXoso.Xoso = append(boxXoso.Xoso, xoso)
 	})
 	return boxXoso, nil
+}
+
+func GetXosoByUrlFollowDay(currentUrl string, boxXoso BoxXoso.BoxXoso) (BoxXoso.BoxXoso, error) {
+	doc, err := goquery.NewDocument(currentUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var xoso BoxXoso.Xoso
+	date := strings.Split(currentUrl, "-")
+	Day := "Kết quả xổ số " + date[1] + "/" + date[2] + "/" + date[3] //Correct way
+	xoso.Day = Day
+
+	DB := doc.Find(".result  tr:nth-child(2) td:nth-child(2) em").Text() //Correct way
+	xoso.Kqxs.DB = DB
+
+	Nhat := doc.Find(".result  tr:nth-child(3) td:nth-child(2) p").Text() //Correct way
+	xoso.Kqxs.Nhat = Nhat
+
+	giaiNhi := strings.Split(doc.Find(".result  tr:nth-child(4) td:nth-child(2) p").Text(), " ")
+	xoso.Kqxs.Nhi = append(xoso.Kqxs.Nhi, giaiNhi[0], giaiNhi[1])
+
+	giaiBa := strings.Split(doc.Find(".result  tr:nth-child(5) td:nth-child(2) p").Text(), " ")
+	xoso.Kqxs.Ba = GetString(giaiBa, 5)
+
+	giaiTu := strings.Split(doc.Find(".result  tr:nth-child(7) td:nth-child(2) p").Text(), " ")
+	xoso.Kqxs.Bon = GetString(giaiTu, 4)
+
+	giaiNam := strings.Split(doc.Find(".result  tr:nth-child(8) td:nth-child(2) p").Text(), " ")
+	xoso.Kqxs.Nam = GetString(giaiNam, 4)
+
+	giaiSau := strings.Split(doc.Find(".result  tr:nth-child(10) td:nth-child(2) p").Text(), " ")
+	xoso.Kqxs.Sau = GetString(giaiSau, 3)
+
+	giaiBay := strings.Split(doc.Find(".result  tr:nth-child(11) td:nth-child(2) p").Text(), " ")
+	xoso.Kqxs.Bay = GetString(giaiBay, 2)
+
+	boxXoso.Xoso = append(boxXoso.Xoso, xoso)
+	return boxXoso, nil
+}
+
+// Seperate concatenation of strings each result Text got from array in func GetXosoByUrlFollowDay
+func GetString(doc []string, numberString int) []string {
+	a := []rune(doc[len(doc)/2])
+	b := doc[:len(doc)/2]
+	c := doc[len(doc)/2+1:]
+	doc = b
+	res := ""
+	for i, v := range a {
+		res = res + string(v)
+		if i > 0 && (i+1)%numberString == 0 {
+			doc = append(doc, res)
+			res = ""
+		}
+	}
+	doc = append(doc, c...)
+	return doc
 }
 
 // Get the first result xoso and parse it to struct BoxXoso

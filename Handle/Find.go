@@ -1,10 +1,12 @@
 package Find
 
 import (
+	Crawler "XosoBot/CrawlData"
 	BoxXoso "XosoBot/Structure"
 	"fmt"
 	"log"
 	"strings"
+	"time"
 )
 
 // Check error
@@ -14,87 +16,20 @@ func CheckError(err error) {
 	}
 }
 
-// Print table kqxs
-func PrintKqxs(boxXoso BoxXoso.BoxXoso, index int) string {
-	var result string
-	seperate := "\n-------------------------------------------------------------\n"
-	result = boxXoso.Xoso[index].Day + "\n" + "DB:\t\t\t" + boxXoso.Xoso[index].Kqxs.DB + seperate + "Nhat:\t\t\t" + boxXoso.Xoso[index].Kqxs.Nhat
-	giai := ""
-	for _, v := range boxXoso.Xoso[index].Kqxs.Nhi {
-		giai += v + "\t\t"
-	}
-	result += seperate + "Nhi:\t\t" + giai
-	giai = ""
-	for i, v := range boxXoso.Xoso[index].Kqxs.Ba {
-		if i == len(boxXoso.Xoso[index].Kqxs.Ba)/2 {
-			giai += "\n\t"
-		}
-		giai += v + "\t\t"
-	}
-	result += seperate + "Ba:\t" + giai
-	giai = ""
-	for _, v := range boxXoso.Xoso[index].Kqxs.Bon {
-		giai += v + "\t\t"
-	}
-	result += seperate + "Bon:\t" + giai
-	giai = ""
-	for i, v := range boxXoso.Xoso[index].Kqxs.Nam {
-		if i == len(boxXoso.Xoso[index].Kqxs.Nam)/2 {
-			giai += "\n\t"
-		}
-		giai += v + "\t\t"
-	}
-	result += seperate + "Nam:\t" + giai
-	giai = ""
-	for _, v := range boxXoso.Xoso[index].Kqxs.Sau {
-		giai += v + "\t\t"
-	}
-	result += seperate + "Sau:\t" + giai
-	giai = ""
-	for _, v := range boxXoso.Xoso[index].Kqxs.Bay {
-		giai += v + "\t\t"
-	}
-	result += seperate + "Bay:\t" + giai
-	return result
-}
-
 // Print result kqxs today
-func FindResultToday(boxXoso BoxXoso.BoxXoso) string {
-	return PrintKqxs(boxXoso, 0)
-}
-
-// Find result kqxs followed by date
-func FindResultFollowingDate(boxXoso BoxXoso.BoxXoso) string {
-	var contex string
-	_, err := fmt.Scanf("%s", &contex)
-	fmt.Println("Nhập ngày bạn muốn tìm kiếm (DD/MM/YYYY): ")
-	_, err = fmt.Scanf("%s", &contex)
-	CheckError(err)
-	day := strings.Split(contex, "/")[0]
-	month := strings.Split(contex, "/")[1]
-	if len(month) == 1 {
-		month = "0" + month
+func FindResultToday(boxXoso BoxXoso.BoxXoso) BoxXoso.Xoso {
+	if date := time.Now(); date.Format("31-01-2006") != boxXoso.Xoso[0].Day {
+		fmt.Println("Chưa có kqxs " + date.Format("02/01/2006"))
+		fmt.Print("Bạn có thể coi kqxs ngày ")
 	}
-	year := strings.Split(contex, "/")[2]
-	if len(year) == 2 {
-		year = "20" + year
-	}
-	contex = day + "/" + month + "/" + year
-	fmt.Println(contex)
-	for i, v := range boxXoso.Xoso {
-		if strings.Split(v.Day, " ")[4] == contex {
-			return PrintKqxs(boxXoso, i)
-		}
-	}
-	return "Find not found"
+	return boxXoso.Xoso[0]
 }
 
 func FindResultFromNumber(boxXoso BoxXoso.BoxXoso) string {
 	var kqxs = boxXoso.Xoso[0].Kqxs
 	var contex string
-	_, err := fmt.Scanf("%s", &contex)
 	fmt.Print("Nhập số bạn muốn dò: ")
-	_, err = fmt.Scanf("%s", &contex)
+	_, err := fmt.Scanf("%s", &contex)
 	CheckError(err)
 	if len(contex) == 5 {
 		if contex == kqxs.DB {
@@ -138,4 +73,69 @@ func FindResultFromNumber(boxXoso BoxXoso.BoxXoso) string {
 		}
 	}
 	return "Find not found"
+}
+
+func String(boxXoso BoxXoso.Xoso) string {
+	var result string
+	seperate := "\n-------------------------------------------------------------\n"
+	result = boxXoso.Day + "\n" + "DB:\t\t\t" + boxXoso.Kqxs.DB + seperate + "Nhat:\t\t\t" + boxXoso.Kqxs.Nhat
+	giai := ""
+	for _, v := range boxXoso.Kqxs.Nhi {
+		giai += v + "\t\t"
+	}
+	result += seperate + "Nhi:\t\t" + giai
+	giai = ""
+	for i, v := range boxXoso.Kqxs.Ba {
+		if i == len(boxXoso.Kqxs.Ba)/2 {
+			giai += "\n\t"
+		}
+		giai += v + "\t\t"
+	}
+	result += seperate + "Ba:\t" + giai
+	giai = ""
+	for _, v := range boxXoso.Kqxs.Bon {
+		giai += v + "\t\t"
+	}
+	result += seperate + "Bon:\t" + giai
+	giai = ""
+	for i, v := range boxXoso.Kqxs.Nam {
+		if i == len(boxXoso.Kqxs.Nam)/2 {
+			giai += "\n\t"
+		}
+		giai += v + "\t\t"
+	}
+	result += seperate + "Nam:\t" + giai
+	giai = ""
+	for _, v := range boxXoso.Kqxs.Sau {
+		giai += v + "\t\t"
+	}
+	result += seperate + "Sau:\t" + giai
+	giai = ""
+	for _, v := range boxXoso.Kqxs.Bay {
+		giai += v + "\t\t"
+	}
+	result += seperate + "Bay:\t" + giai + seperate
+	return result
+}
+
+func FindResultFollowingDate() BoxXoso.BoxXoso {
+	boxXoso := BoxXoso.BoxXoso{}
+	var contex string
+	fmt.Println("Nhập ngày bạn muốn tìm kiếm (DD/MM/YYYY): ")
+	_, err := fmt.Scanf("%s", &contex)
+	CheckError(err)
+	day := strings.Split(contex, "/")[0]
+	month := strings.Split(contex, "/")[1]
+	if len(month) == 1 {
+		month = "0" + month
+	}
+	year := strings.Split(contex, "/")[2]
+	if len(year) == 2 {
+		year = "20" + year
+	}
+	contex = "ngay-" + day + "-" + month + "-" + year
+	Url := `https://xskt.com.vn/xsmb/` + contex
+	boxXoso, err = Crawler.GetXosoByUrlFollowDay(Url, boxXoso)
+	CheckError(err)
+	return boxXoso
 }

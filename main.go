@@ -27,10 +27,12 @@ func main() {
 		Handle.CheckError(err)
 		switch choose {
 		case 1:
-			fmt.Println(Handle.FindResultToday(boxXoso))
+			fmt.Println(Handle.String(Handle.FindResultToday(boxXoso)))
 		case 2:
-			fmt.Println(Handle.FindResultFollowingDate(boxXoso))
+			fmt.Scanln()
+			fmt.Println(Handle.String(Handle.FindResultFollowingDate().Xoso[0]))
 		case 3:
+			fmt.Scanln()
 			fmt.Println(Handle.FindResultFromNumber(boxXoso))
 		case 4:
 			fmt.Println("Thanks for trying my demo project")
