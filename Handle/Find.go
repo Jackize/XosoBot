@@ -16,7 +16,7 @@ func CheckError(err error) {
 	}
 }
 
-// Print result kqxs today
+// Print result today
 func FindResultToday(boxXoso BoxXoso.BoxXoso) BoxXoso.Xoso {
 	if date := time.Now(); date.Format("31-01-2006") != boxXoso.Xoso[0].Day {
 		fmt.Println("Chưa có kqxs " + date.Format("02/01/2006"))
@@ -25,6 +25,7 @@ func FindResultToday(boxXoso BoxXoso.BoxXoso) BoxXoso.Xoso {
 	return boxXoso.Xoso[0]
 }
 
+// Check the number input in result lasted is correct or incorrect
 func FindResultFromNumber(boxXoso BoxXoso.BoxXoso) string {
 	var kqxs = boxXoso.Xoso[0].Kqxs
 	var contex string
@@ -75,6 +76,29 @@ func FindResultFromNumber(boxXoso BoxXoso.BoxXoso) string {
 	return "Find not found"
 }
 
+// Find result follow day typed from input field
+func FindResultFollowingDate() BoxXoso.BoxXoso {
+	boxXoso := BoxXoso.BoxXoso{}
+	var contex string
+	fmt.Println("Nhập ngày bạn muốn tìm kiếm (DD/MM/YYYY): ")
+	_, err := fmt.Scanf("%s", &contex)
+	CheckError(err)
+	day := strings.Split(contex, "/")[0]
+	month := strings.Split(contex, "/")[1]
+	if len(month) == 1 {
+		month = "0" + month
+	}
+	year := strings.Split(contex, "/")[2]
+	if len(year) == 2 {
+		year = "20" + year
+	}
+	contex = "ngay-" + day + "-" + month + "-" + year
+	Url := `https://xskt.com.vn/xsmb/` + contex
+	nboxXoso, err := Crawler.GetXosoByUrlFollowDay(Url, boxXoso)
+	CheckError(err)
+	return nboxXoso
+}
+
 func String(boxXoso BoxXoso.Xoso) string {
 	var result string
 	seperate := "\n-------------------------------------------------------------\n"
@@ -116,26 +140,4 @@ func String(boxXoso BoxXoso.Xoso) string {
 	}
 	result += seperate + "Bay:\t" + giai + seperate
 	return result
-}
-
-func FindResultFollowingDate() BoxXoso.BoxXoso {
-	boxXoso := BoxXoso.BoxXoso{}
-	var contex string
-	fmt.Println("Nhập ngày bạn muốn tìm kiếm (DD/MM/YYYY): ")
-	_, err := fmt.Scanf("%s", &contex)
-	CheckError(err)
-	day := strings.Split(contex, "/")[0]
-	month := strings.Split(contex, "/")[1]
-	if len(month) == 1 {
-		month = "0" + month
-	}
-	year := strings.Split(contex, "/")[2]
-	if len(year) == 2 {
-		year = "20" + year
-	}
-	contex = "ngay-" + day + "-" + month + "-" + year
-	Url := `https://xskt.com.vn/xsmb/` + contex
-	boxXoso, err = Crawler.GetXosoByUrlFollowDay(Url, boxXoso)
-	CheckError(err)
-	return boxXoso
 }

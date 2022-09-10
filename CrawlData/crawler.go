@@ -73,6 +73,10 @@ func GetXosoByUrlFollowDay(currentUrl string, boxXoso BoxXoso.BoxXoso) (BoxXoso.
 	xoso.Day = Day
 
 	DB := doc.Find(".result  tr:nth-child(2) td:nth-child(2) em").Text() //Correct way
+	if DB == "" {
+		err := fmt.Errorf("could not find data in %s", currentUrl)
+		return BoxXoso.BoxXoso{}, err
+	}
 	xoso.Kqxs.DB = DB
 
 	Nhat := doc.Find(".result  tr:nth-child(3) td:nth-child(2) p").Text() //Correct way
